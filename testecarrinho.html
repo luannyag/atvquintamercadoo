@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho de Compras</title>
+    <link rel="stylesheet" href="testecarrinho.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="header-inner-content">
+            <header class="logo"> <img src="imagens/logo.png" alt=""> <h1>CENTRAL<span>MARKET</span></h1></header>
+            <nav class="nav_header">
+                <ul class="ul_header">
+                    <li onclick="home()">Home</li>
+                    <li onclick="produtos()">Produtos</li>
+                    <li onclick="unidades()">Unidades</li>
+                    <li onclick="sobrenos()">Sobres Nós</li>
+                </ul>
+            </nav>
+        </div>
+        <div class="nav-icon-container">
+            <img src="imagens/carrinho.png" alt="carrinho" id="carrinho">
+            <img src="imagens/login.png" alt="login" id="login">
+            <img src="imagens/menu.png" alt="menu" id="menuzinho">
+        </div>
+    </div>
+    <div class="search-bar">
+        <p id="cep"> Loja - Centro | Entregar no CEP: 07115-000</p>
+        <img src="imagens/lupa.png" alt="lupa" id="lupa">
+        <input type="search" name="" id="search" class="search-content" placeholder=" Pesquisa por produtos ou marcas">
+        <button id="appbutton">Baixar o App</button>
+    </div>
+    <div class="search-products">
+        <div class="search-products-content">
+            <h5 onclick="produtos()">Todos</h5>
+            <h5 onclick="bebidas()">Bebidas</h5>
+            <h5 onclick="mercearia()">Mercearia</h5>
+            <h5 onclick="graos()">Grãos</h5>
+            <h5 onclick="limpeza()">Limpeza</h5>
+            <h5 onclick="congelados()">Congelados</h5>
+            <h5 onclick="higiene()">Higiene</h5>
+            <h5 onclick="eletrodomesticos()">Eletrodomésticos</h5>
+            <h5 onclick="hortifruti()">Hortifruti</h5>
+            <h5 onclick="basicos()">Básicos</h5>
+        </div>
+    </div>
+    <div class="carrinhodisplay">
+        <h1 class="carrinhotitulo"> <img src="imagens/carrinho.png" alt="" id="carrinhoicone">Meu Carrinho</h1>
+        <nav class="table">
+            <ul class="table-ul" id="info-carrinho">
+                <li>Quantidade</li>
+                <li>Total</li>
+            </ul>
+        </nav>
+        <div id="itens-carrinho">
+            
+        </div>
+        
+    </div>
+    <script src="real.js"></script>
+    <script>
+   document.addEventListener('DOMContentLoaded', function() {
+    const botoesAdicionarCarrinho = document.querySelectorAll('.add-btn');
+
+    botoesAdicionarCarrinho.forEach(botao => {
+        botao.addEventListener('click', adicionarItemAoCarrinho);
+    });
+
+    function adicionarItemAoCarrinho(event) {
+        const produto = event.target.closest('.produto');
+        const nome = produto.querySelector('h3').textContent;
+        const preco = produto.querySelector('.preço').textContent;
+        const imagem = produto.querySelector('img').src;
+        const idImagem = produto.querySelector('img').getAttribute('id');
+
+        const itemCarrinho = {
+            id: idImagem,
+            nome: nome,
+            preco: preco,
+            imagem: imagem,
+            qtd: 1 
+        };
+
+        let itensCarrinho = JSON.parse(localStorage.getItem('itensCarrinho')) || [];
+        itensCarrinho.push(itemCarrinho); 
+        localStorage.setItem('itensCarrinho', JSON.stringify(itensCarrinho));
+
+        atualizarCarrinhoNaPagina();
+        alert("Produto adicionado ao carrinho!");
+    }
+
+    function atualizarCarrinhoNaPagina() {
+        const carrinhoElemento = document.getElementById('itens-carrinho');
+        carrinhoElemento.innerHTML = '';
+
+        let itensCarrinho = JSON.parse(localStorage.getItem('itensCarrinho')) || [];
+
+        const infoCarrinho = document.getElementById('info-carrinho');
+        if (itensCarrinho.length === 0) {
+            infoCarrinho.style.display = 'none';
+            mostrarMensagemCarrinhoVazio();
+        } else {
+            infoCarrinho.style.display = 'flex';
+
+            let subtotal = 0;
+
+            itensCarrinho.forEach(itemCarrinho => {
+                const divItem = document.createElement('div');
+                divItem.classList.add('item-carrinho');
+
+                const imagem = document.createElement('img');
+                imagem.src = itemCarrinho.imagem;
+                imagem.id = itemCarrinho.id;
+                divItem.appendChild(imagem);
+
+                const divItemTexto = document.createElement('div');
+                divItemTexto.classList.add('item-texto');
+
+                const nome = document.createElement('p');
+                nome.textContent = itemCarrinho.nome;
+                nome.classList.add('nomes');
+                divItemTexto.appendChild(nome);
+
+                const preco = document.createElement('p');
+                preco.textContent = itemCarrinho.preco;
+                preco.classList.add('preço');
+                divItemTexto.appendChild(preco);
+
+                divItem.appendChild(divItemTexto);
+
+                const quantidade = document.createElement('div');
+                quantidade.classList.add('quantidade');
+
+                const botaoDecremento = document.createElement('button');
+                botaoDecremento.textContent = '-';
+                botaoDecremento.setAttribute('data-item-id', itemCarrinho.id); // Adiciona o ID do item como atributo data
+                quantidade.appendChild(botaoDecremento);
+
+                const contadorQuantidade = document.createElement('input');
+                contadorQuantidade.type = 'number';
+                contadorQuantidade.value = itemCarrinho.qtd;
+                contadorQuantidade.setAttribute('min', '1'); 
+                quantidade.appendChild(contadorQuantidade);
+
+                const botaoIncremento = document.createElement('button');
+                botaoIncremento.textContent = '+';
+                botaoIncremento.setAttribute('data-item-id', itemCarrinho.id); // Adiciona o ID do item como atributo data
+                quantidade.appendChild(botaoIncremento);
+
+                const botaoRemover = document.createElement('button');
+                botaoRemover.textContent = 'Remover';
+                botaoRemover.classList.add('remover');
+                quantidade.appendChild(botaoRemover);
+
+                const precoNumerico = parseFloat(itemCarrinho.preco.replace('R$', '').replace(',', '.'));
+                const totalItem = precoNumerico * itemCarrinho.qtd;
+
+                subtotal += totalItem;
+
+                const totalItemElemento = document.createElement('p');
+                totalItemElemento.textContent = `Total: R$ ${totalItem.toFixed(2)}`; 
+                totalItemElemento.classList.add('total-item');
+                divItem.appendChild(totalItemElemento);
+
+                divItem.appendChild(quantidade);
+                carrinhoElemento.appendChild(divItem);
+
+                botaoDecremento.addEventListener('click', (event) => {
+                    const itemId = event.target.getAttribute('data-item-id');
+                    const itemCarrinho = itensCarrinho.find(item => item.id === itemId);
+                    if (itemCarrinho.qtd > 1) {
+                        itemCarrinho.qtd--;
+                        contadorQuantidade.value = itemCarrinho.qtd; t
+                        atualizarQuantidade(itemCarrinho.id, itemCarrinho.qtd);
+                        atualizarTotalItem(itemCarrinho, itemCarrinho.qtd); 
+                    }
+                });
+
+                botaoIncremento.addEventListener('click', (event) => {
+                    const itemId = event.target.getAttribute('data-item-id');
+                    const itemCarrinho = itensCarrinho.find(item => item.id === itemId);
+                    itemCarrinho.qtd++;
+                    contadorQuantidade.value = itemCarrinho.qtd; 
+                    atualizarQuantidade(itemCarrinho.id, itemCarrinho.qtd);
+                    atualizarTotalItem(itemCarrinho, itemCarrinho.qtd); 
+                });
+
+                botaoRemover.addEventListener('click', () => {
+                    itensCarrinho = itensCarrinho.filter(i => i.id !== itemCarrinho.id);
+                    localStorage.setItem('itensCarrinho', JSON.stringify(itensCarrinho));
+                    atualizarCarrinhoNaPagina();
+                });
+
+                contadorQuantidade.addEventListener('change', (event) => {
+                    const itemId = event.target.getAttribute('data-item-id');
+                    const itemCarrinho = itensCarrinho.find(item => item.id === itemId);
+                    const novaQuantidade = parseInt(event.target.value); 
+                    itemCarrinho.qtd = novaQuantidade;
+                    atualizarQuantidade(itemCarrinho.id, itemCarrinho.qtd);
+                    atualizarTotalItem(itemCarrinho, novaQuantidade); 
+                });
+
+                function atualizarTotalItem(itemCarrinho, novaQuantidade) {
+                    const precoNumerico = parseFloat(itemCarrinho.preco.replace('R$', '').replace(',', '.'));
+                    const totalItem = precoNumerico * novaQuantidade;
+                    totalItemElemento.textContent = `Total: R$ ${totalItem.toFixed(2)}`;
+                }
+            });
+
+            const divGrupoTotal = document.createElement('div');
+            divGrupoTotal.classList.add('grupo-total');
+
+            const divSubtotal = document.createElement('div');
+            divSubtotal.textContent = `Subtotal: R$ ${subtotal.toFixed(2)}`;
+            divSubtotal.classList.add('subtotal')
+            divGrupoTotal.appendChild(divSubtotal);
+
+            const hr1 = document.createElement('hr');
+            divGrupoTotal.appendChild(hr1);
+
+            const divTaxaEntrega = document.createElement('div');
+            divTaxaEntrega.textContent = 'Taxa de entrega: Grátis';
+            divTaxaEntrega.classList.add('taxa')
+            divGrupoTotal.appendChild(divTaxaEntrega);
+
+            const hr2 = document.createElement('hr');
+            divGrupoTotal.appendChild(hr2);
+
+            const divTotal = document.createElement('div');
+            divTotal.textContent = `Total: R$ ${subtotal.toFixed(2)}`;
+            divTotal.classList.add('total')
+            divGrupoTotal.appendChild(divTotal);
+
+            const botaoContinuar = document.createElement('button');
+            botaoContinuar.textContent = 'Continuar';
+            botaoContinuar.classList.add('botao-continuar');
+            carrinhoElemento.appendChild(botaoContinuar);
+
+            carrinhoElemento.appendChild(divGrupoTotal);
+
+            botaoContinuar.addEventListener('click', function(event) {
+                event.preventDefault();
+                abrirModalPagamento();
+            });
+        }
+    }
+
+    function atualizarQuantidade(id, novaQuantidade) {
+        let itensCarrinho = JSON.parse(localStorage.getItem('itensCarrinho')) || [];
+        const itemCarrinho = itensCarrinho.find(item => item.id === id);
+        if (itemCarrinho) {
+            itemCarrinho.qtd = novaQuantidade;
+            localStorage.setItem('itensCarrinho', JSON.stringify(itensCarrinho));
+            atualizarCarrinhoNaPagina();
+        }
+    }
+
+    function mostrarMensagemCarrinhoVazio() {
+        const carrinhoElemento = document.getElementById('itens-carrinho');
+        carrinhoElemento.innerHTML = '';
+
+        const mensagemVazio = document.createElement('p');
+        mensagemVazio.textContent = 'Seu carrinho está vazio';
+        mensagemVazio.classList.add('mensagem-vazio');
+        carrinhoElemento.appendChild(mensagemVazio);
+
+        const botaoEscolherProdutos = document.createElement('button');
+        botaoEscolherProdutos.classList.add('escolher-produtos');
+        botaoEscolherProdutos.textContent = 'Escolher produtos';
+        botaoEscolherProdutos.addEventListener('click', () => {
+            window.location.href = 'produtos.html';
+        });
+        carrinhoElemento.appendChild(botaoEscolherProdutos);
+    }
+
+    
+    function criarModalPagamento() {
+        const modal = document.createElement('div');
+        modal.classList.add('modal');
+        modal.id = 'modalPagamento';
+        
+        const modalContent = document.createElement('div');
+        modalContent.classList.add('modal-content');
+        
+        const closeButton = document.createElement('span');
+        closeButton.classList.add('close');
+        closeButton.innerHTML = '&times;';
+        
+        const form = document.createElement('form');
+        
+        form.innerHTML = `
+            <h2>Pagamento</h2>
+            <div class="informacoes">
+                <div class="nome_cartao">
+                    <label for="nome">Nome no Cartão:</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+                <div class="numero-cartao">
+                    <label for="numeroCartao">Número do Cartão:</label>
+                    <input type="number" id="numeroCartao" name="numeroCartao" required>
+                </div>
+                <div class="validade-cartao">
+                    <label for="validade">Validade:</label>
+                    <input type="text" id="validade" name="validade" required>
+                </div>
+                <div class="cvv">
+                    <label for="cvv">CVV:</label>
+                    <input type="text" id="cvv" name="cvv" required >
+                </div>
+            </div>
+            <button type="submit">Confirmar Pagamento</button>
+        `;
+        
+        modalContent.appendChild(closeButton);
+        modalContent.appendChild(form);
+        modal.appendChild(modalContent);
+        
+        document.body.appendChild(modal);
+        
+       
+        closeButton.onclick = function() {
+            modal.style.display = 'none';
+        };
+        
+       
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        };
+        
+        
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            modal.style.display = 'none';
+            window.location.href = 'agradecimento.html';
+        });
+
+        const cvvInput = document.getElementById('cvv');
+
+        cvvInput.addEventListener('input', function(event) {
+            let cvv = event.target.value.replace(/\D/g, '');
+            if (cvv.length > 3) {
+                cvv = cvv.slice(0, 3); 
+            }
+            event.target.value = cvv;
+        });
+
+        const validadeInput = document.getElementById('validade');
+
+        validadeInput.addEventListener('input', function(event) {
+            let validade = event.target.value.replace(/\D/g, ''); 
+            if (validade.length > 4) {
+                validade = validade.slice(0, 4); 
+            }
+            if (validade.length > 2) {
+                validade = validade.slice(0, 2) + '/' + validade.slice(2); 
+            }
+            event.target.value = validade;
+        });
+
+
+    }
+    
+    criarModalPagamento();
+    
+    
+    function abrirModalPagamento() {
+        const modal = document.getElementById('modalPagamento');
+        modal.style.display = 'block';
+    }
+
+    function criarModalAgradecimento() {
+    const modalAgradecimento = document.createElement('div');
+    modalAgradecimento.classList.add('modal');
+    modalAgradecimento.id = 'modalAgradecimento';
+    
+    const modalContent = document.createElement('div');
+    modalContent.classList.add('modal-content');
+    
+    const closeButton = document.createElement('span');
+    closeButton.classList.add('close');
+    closeButton.innerHTML = '&times;';
+    
+    const mensagem = document.createElement('p');
+    mensagem.textContent = 'Obrigado por comprar conosco! Sua compra chegará entre ';
+
+    const horarioEntrega = document.createElement('span');
+    const agora = new Date();
+    const horaEntregaMinima = new Date(agora.getTime() + 40 * 60000);
+    const horaEntregaMaxima = new Date(agora.getTime() + 70 * 60000);
+    const horaMinimaFormatada = horaEntregaMinima.getHours().toString().padStart(2, '0') + ':' + horaEntregaMinima.getMinutes().toString().padStart(2, '0');
+    const horaMaximaFormatada = horaEntregaMaxima.getHours().toString().padStart(2, '0') + ':' + horaEntregaMaxima.getMinutes().toString().padStart(2, '0');
+    horarioEntrega.textContent = `${horaMinimaFormatada} - ${horaMaximaFormatada}`;
+
+    const botaoAcompanharPedido = document.createElement('button');
+    botaoAcompanharPedido.textContent = 'Acompanhar meu pedido';
+
+    modalContent.appendChild(closeButton);
+    modalContent.appendChild(mensagem);
+    modalContent.appendChild(horarioEntrega);
+    modalContent.appendChild(botaoAcompanharPedido);
+    modalAgradecimento.appendChild(modalContent);
+    
+    document.body.appendChild(modalAgradecimento);
+    
+   
+    closeButton.onclick = function() {
+        modalAgradecimento.style.display = 'none';
+    };
+    
+   
+    window.onclick = function(event) {
+        if (event.target == modalAgradecimento) {
+            modalAgradecimento.style.display = 'none';
+        }
+    };
+    
+    botaoAcompanharPedido.addEventListener('click', function() {
+        // Aqui você pode adicionar o redirecionamento para a página de acompanhamento do pedido
+        alert('Redirecionar para a página de acompanhamento do pedido');
+    });
+}
+
+    criarModalAgradecimento();
+
+    function abrirModalAgradecimento() {
+        const modalAgradecimento = document.getElementById('modalAgradecimento');
+        modalAgradecimento.style.display = 'block';
+    }
+
+
+    
+    
+    atualizarCarrinhoNaPagina();
+});
+
+    </script>
+</body>
+</html>

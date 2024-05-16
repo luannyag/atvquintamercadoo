@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos</title>
+    <link rel="stylesheet" href="produtos.css">
+    <link rel="shortcut icon" href="/imagens/logo.png" type="image/x-icon">
+    <script src="produtos.js"></script>
+    <script src="real.js"></script>
+    <style>
+        .purchase-message {
+            text-align: center;
+            margin-top: 35px;
+            border-radius: 35px;
+            width: 75%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .purchase-message img {
+            width: 50px;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        .purchase-message p {
+            font-size: 3em; 
+        }
+
+        .purchase-message button {
+            font-size: 1.5em; 
+            padding: 10px 20px;
+            margin-top: 20px;
+            background-color: #005D04;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .purchase-message button:hover {
+            background-color: #005D04; 
+        }
+    </style>
+    <script>
+        function calculateDeliveryTime40() {
+            var now = new Date();
+            var deliveryTime = new Date(now.getTime() + 2400000); 
+            var hours = deliveryTime.getHours();
+            var minutes = deliveryTime.getMinutes();
+            
+            var formattedTime = (hours < 10 ? '0' : '') + hours + ':' + (minutes < 10 ? '0' : '') + minutes;
+            return formattedTime;
+        }
+
+        
+        function calculateDeliveryTime70() {
+            var now = new Date();
+            var deliveryTime = new Date(now.getTime() + 4200000); 
+            var hours = deliveryTime.getHours();
+            var minutes = deliveryTime.getMinutes();
+            
+            var formattedTime = (hours < 10 ? '0' : '') + hours + ':' + (minutes < 10 ? '0' : '') + minutes;
+            return formattedTime;
+        }
+
+       
+        function displayDeliveryMessage() {
+            var deliveryTime40 = calculateDeliveryTime40();
+            var deliveryTime70 = calculateDeliveryTime70();
+            document.getElementById('delivery-time').textContent = deliveryTime40 + ' e ' + deliveryTime70;
+        }
+        
+       
+        window.onload = function() {
+            displayDeliveryMessage(); 
+        };
+    </script>
+</head>
+<body>
+    <div class="navbar">
+        <div class="header-inner-content">
+            <header class="logo"> <img src="imagens/logo.png" alt=""> <h1>CENTRAL<span>MARKET</span></h1></header>
+            <nav class="nav_header">
+                <ul class="ul_header">
+                    <li onclick="home()">Home</li>
+                    <li onclick="produtos()">Produtos</li>
+                    <li onclick="unidades()">Unidades</li>
+                    <li onclick="sobrenos()">Sobre Nós</li>
+                </ul>
+            </nav>
+        </div>
+        <div class="nav-icon-container">
+            <img src="imagens/carrinho.png" alt="carrinho" id="carrinho" onclick="carrinho()">
+            <img src="imagens/login.png" alt="login" id="login">
+            <img src="imagens/menu.png" alt="menu" id="menuzinho">
+        </div>
+    </div>
+    <div class="search-bar">
+        <p id="cep"> Loja - Centro | Entregar no CEP: 07115-000</p>
+        <img src="imagens/lupa.png" alt="lupa" id="lupa">
+        <input type="search" name="" id="search" class="search-content" placeholder=" Pesquisa por produtos ou marcas">
+        <button id="appbutton">Baixar o App</button>
+    </div>
+    <div class="search-products">
+        <div class="search-products-content">
+            <h5 onclick="produtos()">Todos</h5>
+            <h5 onclick="bebidas()">Bebidas</h5>
+            <h5 onclick="mercearia()">Mercearia</h5>
+            <h5 onclick="graos()">Grãos</h5>
+            <h5 onclick="limpeza()">Limpeza</h5>
+            <h5 onclick="congelados()">Congelados</h5>
+            <h5 onclick="higiene()">Higiene</h5>
+            <h5 onclick="eletrodomesticos()">Eletrodomésticos</h5>
+            <h5 onclick="hortifruti()">Hortifruti</h5>
+            <h5 onclick="basicos()">Básicos</h5>
+        </div>
+    </div>
+    <div class="purchase-message">
+        <p> <span id="agradecimento">Obrigado por comprar conosco!</span> <br> Sua compra chegará entre <span id="delivery-time"></span>.</p>
+        <button id="track-order-button">Acompanhar meu pedido</button>
+    </div>
+</body>
+</html>
